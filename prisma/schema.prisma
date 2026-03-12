@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Student {
+  id        String   @id @default(uuid())
+  nickname  String   @unique
+  createdAt DateTime @default(now())
+  progress  Progress?
+  results   ActivityResult[]
+}
+
+model Progress {
+  id                String   @id @default(uuid())
+  studentId         String   @unique
+  xpPoints          Int      @default(0)
+  grammarLevel      Int      @default(1)
+  instructionsLevel Int      @default(1)
+  robotParts        Json     @default("[]")
+  robotDesign       Json     @default("{}")
+  updatedAt         DateTime @updatedAt
+  student           Student  @relation(fields: [studentId], references: [id])
+}
+
+model ActivityResult {
+  id             String   @id @default(uuid())
+  studentId      String
+  activityType   String
+  score          Int
+  completionTime DateTime @default(now())
+  student        Student  @relation(fields: [studentId], references: [id])
+}
